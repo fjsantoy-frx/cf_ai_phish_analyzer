@@ -1,0 +1,10 @@
+name = "phish-scale-analyzer"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+[ai]
+binding = "AI"
+
+[[kv_namespaces]]
+binding = "THREAT_HISTORY"
+id = "PASTE_YOUR_KV_ID_HERE"
