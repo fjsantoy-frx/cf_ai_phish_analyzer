@@ -8,3 +8,4 @@ binding = "AI"
 [[kv_namespaces]]
 binding = "THREAT_HISTORY"
 id = "PASTE_YOUR_KV_ID_HERE"
+assets = { directory = "./public" }
