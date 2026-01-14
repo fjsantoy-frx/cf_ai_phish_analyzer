@@ -1,3 +1,8 @@
+// Add this at the top of your fetch function in GitHub
+if (request.method === "GET") {
+  // This tells the Worker: "If someone just visits the site, show them the dashboard"
+  return env.ASSETS.fetch(request);
+}
 export default {
   async fetch(request, env) {
     // Add CORS headers so your website can talk to this Worker
