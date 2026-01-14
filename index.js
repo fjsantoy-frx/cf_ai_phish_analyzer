@@ -22,7 +22,7 @@ export default {
       const { content } = await request.json();
       
       // Call Llama 3.3
-      const aiResponse = await env.AI.run('@cf/meta/llama-3.3-70b-instruct-awq', {
+      const aiResponse = await env.AI.run('@cf/meta/llama-3.3-70b-instruct-fp8-fast', {
         messages: [
           { role: 'system', content: 'You are a Collegiate Athletics Cybersecurity Expert. Analyze the text for NIL fraud or eligibility scams.' },
           { role: 'user', content: content }
