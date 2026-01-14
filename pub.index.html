@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phish-Scale | Athlete Security Scout</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #f3f4f6; }
+        .athlete-blue { background-color: #1e3a8a; } /* Professional Team Blue */
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-md overflow-hidden p-8">
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-blue-900">🛡️ Phish-Scale</h1>
+            <p class="mt-2 text-gray-600">Analyze suspicious emails, NIL deals, or eligibility alerts.</p>
+        </div>
+
+        <div class="mt-8">
+            <label class="block text-sm font-medium text-gray-700">Paste the suspicious content here:</label>
+            <textarea id="emailContent" rows="6" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., 'URGENT: Your scholarship is at risk...'"></textarea>
+            
+            <button onclick="analyzePhish()" id="btn" class="mt-4 w-full athlete-blue text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-800 transition duration-200">
+                RUN SCOUT REPORT
+            </button>
+        </div>
+
+        <div id="results" class="mt-8 hidden">
+            <h2 class="text-xl font-semibold border-b pb-2">Coach's Analysis:</h2>
+            <div id="aiOutput" class="mt-4 p-4 bg-gray-50 rounded-lg text-gray-800 whitespace-pre-wrap italic border-l-4 border-blue-900">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        async function analyzePhish() {
+            const content = document.getElementById('emailContent').value;
+            const resultsDiv = document.getElementById('results');
+            const output = document.getElementById('aiOutput');
+            const btn = document.getElementById('btn');
+
+            if (!content) return alert("Please paste some content first!");
+
+            // Update UI to show loading state
+            btn.innerText = "Analyzing Film...";
+            btn.disabled = true;
+
+            try {
+                // Change this URL to your live Cloudflare Worker URL
+                const response = await fetch('https://your-worker-url.workers.dev/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: content })
+                });
+
+                const data = await response.json();
+                
+                resultsDiv.classList.remove('hidden');
+                output.innerText = data.analysis;
+            } catch (error) {
+                alert("Error connecting to the Scout Brain: " + error.message);
+            } finally {
+                btn.innerText = "RUN SCOUT REPORT";
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
