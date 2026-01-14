@@ -1,48 +1,34 @@
-// Add this at the top of your fetch function in GitHub
-if (request.method === "GET") {
-  // This tells the Worker: "If someone just visits the site, show them the dashboard"
-  return env.ASSETS.fetch(request);
-}
 export default {
   async fetch(request, env) {
-    // Add CORS headers so your website can talk to this Worker
-    const corsHeaders = {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    };
+    // 1. SERVE FRONTEND: If a user visits the site, show the dashboard
+    if (request.method === "GET") {
+      return env.ASSETS.fetch(request);
+    }
 
-    if (request.method === "OPTIONS") return new Response("OK", { headers: corsHeaders });
-
+    // 2. BACKEND LOGIC: Handle the AI analysis (POST requests)
     if (request.method !== "POST") {
-      return new Response("Method Not Allowed", { status: 405 });
+      return new Response("Send a POST request with content.", { status: 405 });
     }
 
-    try {
-      const { content } = await request.json();
-      
-      // Call Llama 3.3
-      const aiResponse = await env.AI.run('@cf/meta/llama-3.3-70b-instruct-fp8-fast', {
-        messages: [
-          { role: 'system', content: 'You are a Collegiate Athletics Cybersecurity Expert. Analyze the text for NIL fraud or eligibility scams.' },
-          { role: 'user', content: content }
-        ]
-      });
+    const { content } = await request.json();
+    const timestamp = new Date().toISOString();
 
-      // Save to KV Memory
-      const id = crypto.randomUUID();
-      await env.THREAT_HISTORY.put(`threat_${id}`, JSON.stringify({
-        content: content.substring(0, 200),
-        result: aiResponse.response,
-        timestamp: new Date().toISOString()
-      }));
+    // 3. AI ANALYSIS: Using the 'fast' version of Llama 3.3
+    const aiResponse = await env.AI.run('@cf/meta/llama-3.3-70b-instruct-fp8-fast', {
+      messages: [
+        { role: 'system', content: 'You are a Cybersecurity Analyst. Analyze the text for phishing red flags.' },
+        { role: 'user', content: content }
+      ]
+    });
 
-      return new Response(JSON.stringify(aiResponse), { 
-        headers: { ...corsHeaders, "Content-Type": "application/json" } 
-      });
+    // 4. SAVE TO MEMORY
+    await env.THREAT_HISTORY.put(`threat_${timestamp}`, JSON.stringify({
+      content: content.substring(0, 100),
+      analysis: aiResponse.response
+    }));
 
-    } catch (err) {
-      return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: corsHeaders });
-    }
+    return new Response(JSON.stringify({ analysis: aiResponse.response }), {
+      headers: { "Content-Type": "application/json" }
+    });
   }
 };
