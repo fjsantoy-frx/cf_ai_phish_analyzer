@@ -30,6 +30,32 @@ The app runs entirely serverless for maximum speed and security:
 
 ---
 
+## 🚀 How to Run Locally (Terminal or PyCharm)
+
+To run this project on your machine, you must use the terminal. This can be the terminal inside PyCharm or a standalone terminal (like iTerm or Command Prompt).
+
+**1. Navigate to the project directory:**
+Make sure you are in the exact folder where `wrangler.toml` and `index.js` are located.
+```bash
+cd path/to/this/project
+```
+*(If you open the terminal at the bottom of PyCharm while this project is open, you are already in the right directory).*
+
+**2. Start the local server:**
+Run the following command to start the Cloudflare development server:
+```bash
+npx wrangler dev
+```
+
+Alternatively, you can just run the provided script:
+```bash
+./run.sh
+```
+
+Wrangler will start a local server (usually at `http://localhost:8787`). You can open that link in your browser to view the frontend, or send POST requests to it to test the AI.
+
+---
+
 ## 💻 Implementation
 
 ### 1. The Worker (Logic)
